@@ -1,0 +1,11 @@
+version: '2'
+services:
+  hkjc-postgresql:
+    image: postgres:12.1
+    # volumes:
+    #     - ~/volumes/jhipster/hkjc/postgresql/:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=hkjc
+      - POSTGRES_PASSWORD=
+    ports:
+      - 5432:5432

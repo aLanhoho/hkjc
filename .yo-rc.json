@@ -1,0 +1,39 @@
+{
+  "generator-jhipster": {
+    "promptValues": {
+      "packageName": "com.win.big"
+    },
+    "jhipsterVersion": "6.8.0",
+    "applicationType": "monolith",
+    "baseName": "",
+    "packageName": "com.win.big",
+    "packageFolder": "com/win/big",
+    "serverPort": "8080",
+    "authenticationType": "jwt",
+    "cacheProvider": "no",
+    "websocket": false,
+    "databaseType": "sql",
+    "devDatabaseType": "postgresql",
+    "prodDatabaseType": "postgresql",
+    "searchEngine": false,
+    "messageBroker": false,
+    "serviceDiscoveryType": false,
+    "buildTool": "maven",
+    "enableSwaggerCodegen": false,
+    "jwtSecretKey": "YjIzNTM3OGQzMjA1NmJhNTRhMGNlMzJlNTVmOGU1NTg1ZmJiN2ZlZDU3NWU5YzhmNGFhY2QwMjM5MDRhNGJkYzRhYTI0MmFlMDViZWUzMzVmYWUwOWU0N2JmZGVmODYzNjgxNWU1N2UwYTc2YzhmODUwZTMxYTg1ODg1OTRhZDA=",
+    "embeddableLaunchScript": false,
+    "useSass": true,
+    "clientPackageManager": "npm",
+    "clientFramework": "angularX",
+    "clientTheme": "lux",
+    "clientThemeVariant": "primary",
+    "creationTimestamp": 1584586555522,
+    "testFrameworks": [],
+    "jhiPrefix": "jhi",
+    "entitySuffix": "",
+    "dtoSuffix": "DTO",
+    "otherModules": [],
+    "enableTranslation": false,
+    "blueprints": []
+  }
+}
