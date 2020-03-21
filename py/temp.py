@@ -69,8 +69,8 @@ def getRemoteUri(url) :
 MAX_RETRY_COUNT=5
 
 for raceCounter in range (1, 15): #from 1 to 14 (15)
-    raceDate = '2020/03/14'
-    raceCourt = 'ST'
+    raceDate = '2020/03/18'
+    raceCourt = 'HV'
     raceNo = raceCounter
     raceContainer = Race(raceDate, raceCourt, raceNo)
     

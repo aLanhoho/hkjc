@@ -9,6 +9,9 @@ sum(t1.quinella) as quinella,
 sum(t1.quinellaPlace1) as quinellaPlace1,
 sum(t1.quinellaPlace2) as quinellaPlace2,
 sum(t1.quinellaPlace3) as quinellaPlace3,
+(select case when sum(t1.threePickOne1) = -1 then 0 else sum(t1.threePickOne1) end) as threePickOne1,
+(select case when sum(t1.threePickOne2) = -1 then 0 else sum(t1.threePickOne2) end) as threePickOne2,
+(select case when sum(t1.threePickOne3) = -1 then 0 else sum(t1.threePickOne3) end) as threePickOne3,
 sum(t1.tierce) as tierce,
 sum(t1.trio) as trio,
 sum(t1.first4) as first4,
@@ -18,7 +21,8 @@ sum(t1.double2) as double2,
 sum(t1.doubleTrio) as doubleTrio,
 sum(t1.tripleTrio) as tripleTrio,
 sum(t1.tripleTrioWeak) as tripleTrioWeak,
-sum(t1.sixUp) as sixUp
+sum(t1.sixUp1) as sixUp1,
+sum(t1.sixUp2) as sixUp2
 from 
 (
 	select 
@@ -32,6 +36,9 @@ from
 	(select case when t.pool = 'QUINELLA PLACE' and t.order = '0' then t.ratio else 0 end) as quinellaPlace1, /*位置Q*/
 	(select case when t.pool = 'QUINELLA PLACE' and t.order = '1' then t.ratio else 0 end) as quinellaPlace2, /*位置Q*/
 	(select case when t.pool = 'QUINELLA PLACE' and t.order = '2' then t.ratio else 0 end) as quinellaPlace3, /*位置Q*/
+	(select case when t.pool = '3 PICK 1' and t.order = '0' then t.ratio else 0 end) as threePickOne1, /*3揀1*/
+	(select case when t.pool = '3 PICK 1' and t.order = '1' then t.ratio else 0 end) as threePickOne2, /*3揀1*/
+	(select case when t.pool = '3 PICK 1' and t.order = '2' then t.ratio else 0 end) as threePickOne3, /*3揀1*/
 	(select case when t.pool = 'TIERCE' then t.ratio else 0 end) as tierce, /*三重彩*/
 	(select case when t.pool = 'TRIO' then t.ratio else 0 end) as trio, /*單T*/
 	(select case when t.pool = 'FIRST 4' then t.ratio else 0 end) as first4, /*四連環*/
@@ -41,7 +48,8 @@ from
 	(select case when t.pool like '% DOUBLE TRIO' then t.ratio else 0 end) as doubleTrio, /*孖T*/
 	(select case when t.pool = 'TRIPLE TRIO' then t.ratio else 0 end) as tripleTrio, /*三T*/
 	(select case when t.pool = 'TRIPLE TRIO(Consolation)' then t.ratio else 0 end) as tripleTrioWeak, /*三T(安慰獎)*/
-	(select case when t.pool = 'SIX UP' then t.ratio else 0 end) as sixUp /*六環彩*/
+	(select case when t.pool = 'SIX UP' and t.order = '0' then t.ratio else 0 end) as sixUp1, /*六環彩*/
+	(select case when t.pool = 'SIX UP' and t.order = '1' then t.ratio else 0 end) as sixUp2 /*六環彩*/
 
 	
 	from 
