@@ -1,5 +1,3 @@
-
-
 drop table if exists race_hist cascade;
 
 create table race_hist (

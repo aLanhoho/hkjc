@@ -12,6 +12,7 @@ from datetime import datetime
 from lxml import html, etree
 from selenium import webdriver
 driver = webdriver.PhantomJS()
+zh_driver = webdriver.PhantomJS()
 
 
 try:
@@ -39,6 +40,15 @@ class RaceDividend:
         self.order = order
         self.combination = combination
         self.ratio = ratio
+
+class Horse:
+    def __init__(self, name, plc, draw, jockey, trainer, ratio):
+        self.name = name
+        self.plc = plc #名次
+        self.draw = draw #檔位
+        self.jockey = jockey #騎師
+        self.trainer = trainer #練馬師
+        self.ratio = ratio #獨羸
 
 #params = (
 #    ('lang', 'ch'),
@@ -69,12 +79,13 @@ def getRemoteUri(url) :
 MAX_RETRY_COUNT=5
 
 for raceCounter in range (1, 15): #from 1 to 14 (15)
-    raceDate = '2020/03/18'
-    raceCourt = 'HV'
+    raceDate = '2020/03/22'
+    raceCourt = 'ST'
     raceNo = raceCounter
     raceContainer = Race(raceDate, raceCourt, raceNo)
     
     url = 'https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=' + raceDate + '&Racecourse=' + raceCourt + '&RaceNo='  + str(raceNo)
+    zh_url = 'https://racing.hkjc.com/racing/information/Chinese/Racing/LocalResults.aspx?RaceDate=' + raceDate + '&Racecourse=' + raceCourt + '&RaceNo='  + str(raceNo)
     #url="file:///C:/Users/Ming/Desktop/HKJC/race_eng.html"
     
     print('============================================================')
@@ -87,7 +98,7 @@ for raceCounter in range (1, 15): #from 1 to 14 (15)
     
     #print(test)
     
-    if (getRemoteUri(url) == -999):
+    if (getRemoteUri(url) == -999 | getRemoteUri(zh_url) == -999):
         continue
     
     
@@ -107,11 +118,14 @@ for raceCounter in range (1, 15): #from 1 to 14 (15)
     for retryCounter in range(1, MAX_RETRY_COUNT + 1):
         print('Attempt : ' + str(retryCounter))
         driver.get(url)
+        zh_driver.get(zh_url)
     
         try: 
             table = driver.find_element_by_class_name('dividend_tab')
             tableRank = driver.find_element_by_class_name('performance')
-            print(table.text)
+            zh_table = zh_driver.find_element_by_class_name('dividend_tab')
+            zh_tableRank = zh_driver.find_element_by_class_name('performance')
+            #print(table.text)
             print('----')
             break
         except Exception as e: 
@@ -132,8 +146,24 @@ for raceCounter in range (1, 15): #from 1 to 14 (15)
 
     jsonHorseRankStr = json.dumps(horseRank)
     print(jsonHorseRankStr)
-   
     
+    #=============================
+    #Get Rank 1-4 Horse details
+    #=============================
+    horseInfo=[]
+    for horseInfoCount in range(1,5):
+        h_name = (zh_tableRank.find_elements_by_css_selector('tr')[horseInfoCount]).find_elements_by_css_selector('td')[2].text
+        h_plc = (zh_tableRank.find_elements_by_css_selector('tr')[horseInfoCount]).find_elements_by_css_selector('td')[0].text 
+        h_draw = (zh_tableRank.find_elements_by_css_selector('tr')[horseInfoCount]).find_elements_by_css_selector('td')[7].text 
+        h_jockey = (zh_tableRank.find_elements_by_css_selector('tr')[horseInfoCount]).find_elements_by_css_selector('td')[3].text 
+        h_trainer = (zh_tableRank.find_elements_by_css_selector('tr')[horseInfoCount]).find_elements_by_css_selector('td')[4].text
+        h_ratio = (zh_tableRank.find_elements_by_css_selector('tr')[horseInfoCount]).find_elements_by_css_selector('td')[11].text
+        horse=Horse(h_name, h_plc, h_draw, h_jockey, h_trainer, h_ratio)
+        horseInfo.append(horse)
+    
+    jsonHorseInfoStr = json.dumps([d.__dict__ for d in horseInfo],ensure_ascii=False)
+    print(jsonHorseInfoStr)
+        
     #=============================
     #Get dividend
     #=============================
@@ -240,14 +270,14 @@ for raceCounter in range (1, 15): #from 1 to 14 (15)
     #print(selectCount)
 
     if (selectCount == 0):
-        insertQuery='insert into race_hist (race_date, race_no, create_dt, update_dt, horse_rank, race_details, race_dividend) values (%s, %s, %s, %s, %s, %s, %s)'
-        insertTuple = [raceDate, raceNo, timestamp, timestamp, jsonHorseRankStr, jsonRaceStr, jsonDividendStr]
+        insertQuery='insert into race_hist (race_date, race_no, create_dt, update_dt, horse_rank, horse_info, race_details, race_dividend) values (%s, %s, %s, %s, %s, %s, %s, %s)'
+        insertTuple = [raceDate, raceNo, timestamp, timestamp, jsonHorseRankStr, jsonHorseInfoStr, jsonRaceStr, jsonDividendStr]
         cursor.execute(insertQuery, insertTuple)
         conn.commit()
         print('Insert record successfully : ' + raceDate + ' ' + str(raceNo))
     else :
-        updateQuery='update race_hist set horse_rank=%s, update_dt=%s, race_details=%s, race_dividend=%s where race_date=%s and race_no=%s'
-        updateTuple=[jsonHorseRankStr, timestamp, jsonRaceStr, jsonDividendStr, raceDate, raceNo]
+        updateQuery='update race_hist set horse_rank=%s, update_dt=%s, race_details=%s, horse_info=%s, race_dividend=%s where race_date=%s and race_no=%s'
+        updateTuple=[jsonHorseRankStr, timestamp, jsonRaceStr, jsonHorseInfoStr, jsonDividendStr, raceDate, raceNo]
         cursor.execute(updateQuery, updateTuple)
         conn.commit()
         print('Update record successfully : ' + raceDate + ' ' + str(raceNo))
